@@ -2,7 +2,7 @@ const express = require("express");
 const {User, UserTypeMap} = require("../models/user");
 const router = express.Router();
 const database = require("../db");
-const Predmet = require("../models/predmet");
+const {Predmet} = require("../models/predmet");
 /* GET users listing. */
 
  async function getAllUsers() {

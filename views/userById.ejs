@@ -67,7 +67,7 @@ const userKey = key;
                 });
 
                 var existingUser = <%- JSON.stringify(user) %>;
-                if  (!!existingUser.id) {
+                if  (!!existingUser &&!!existingUser.id) {
                     object.id = existingUser.id;
                 }
 
