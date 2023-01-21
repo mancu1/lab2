@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <title>My Website</title>
+</head>
+<body onload="onLoadHandler()">
+<%- include('./template/header.ejs'); %>
+<%
+/**
+ * @type {Array<Major>}
+ */
+const _majors = majors;
+
+/**
+ * @type {User}
+ */
+const existingUser = user;
+/**
+ * @type {number}
+ */
+const countUsers = count;
+/**
+ * @type {number | 'new'}
+ */
+const userKey = key;
+
+%>
+<script>
+
+    let currentPage = <%- userKey!=='new'?userKey: 0%>;
+
+    function onLoadHandler() {
+        fillFormWithExistingUser();
+        initHandlers();
+    }
+    function initHandlers() {
+
+        document.querySelector("form").addEventListener("submit", event => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+
+
+            const formElem = event.target;
+            let isFormValid = true;
+
+            // check if all fields are filled in
+            for (let input of formElem) {
+                if (input.type !== "submit" &&input.type !== "button" && input.name !== "id" && !input.value) {
+                    isFormValid = false;
+                    input.classList.add("invalid");
+                } else {
+                    input.classList.remove("invalid");
+                }
+            }
+            if (isFormValid) {
+                let object = {};
+                formData.forEach((value, key) => {
+                    if (!Reflect.has(object, key)) {
+                        object[key] = value;
+                        return;
+                    }
+                    if (!Array.isArray(object[key])) {
+                        object[key] = [object[key]];
+                    }
+                    object[key].push(value);
+                });
+
+                var existingUser = <%- JSON.stringify(user) %>;
+                if  (!!existingUser.id) {
+                    object.id = existingUser.id;
+                }
+
+                object.Is_ochnay = !!object.Is_ochnay? 1: 0;
+                let json = JSON.stringify(object);
+
+
+                fetch("/users", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: json
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        // Handle the success response
+                    })
+                    .catch(error => {
+                        // Handle the error response
+                    });
+            }
+        });
+        document.getElementById("remove-btn").addEventListener("click", () => {
+            fetch(`/users/<%-user?.id%>`, {
+                method: "DELETE"
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    // reset form fields
+                    // update selected user id
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    }
+
+    function fillFormWithExistingUser() {
+        var existingUser = <%- JSON.stringify(user) %>;
+        if (!existingUser) {
+            document.getElementById("remove-btn").disabled = true;
+            return;
+        }
+        document.getElementById("id").value = existingUser.id;
+        document.getElementById("fio").value = existingUser.FIO;
+        document.getElementById("gender").value = existingUser.Gender;
+        document.getElementById("bd").value = existingUser.bd;
+        document.getElementById("Id_major").value = existingUser.Id_major;
+        document.getElementById("parents").value = existingUser.Parents;
+        document.getElementById("address").value = existingUser.Address;
+        document.getElementById("phone").value = existingUser.Phone;
+        document.getElementById("passport").value = existingUser.Passport;
+        document.getElementById("zachetNumber").value = existingUser.ZachetNumber;
+        document.getElementById("startDate").value = existingUser.StartDate;
+        document.getElementById("group").value = existingUser.Group;
+        document.getElementById("curs").value = existingUser.Curs;
+
+    }
+
+
+</script>
+<main>
+
+    <%- include('./template/navigation.ejs', {total: countUsers, title: "Студенты", id: userKey, link: "users"}); %>
+
+<!--    -->
+    <form>
+        <label for="id">Id:</label>
+        <input type="number" id="id" name="id" disabled>
+
+        <label for="fio">FIO:</label>
+        <input type="text" id="fio" name="FIO" required>
+
+        <label for="gender">Gender:</label>
+        <input type="text" id="gender" name="Gender" required>
+
+        <label for="bd">Birthdate:</label>
+        <input type="date" id="bd" name="bd" required>
+
+        <label for="Id_major">Major</label>
+        <select id="Id_major" name="Id_major">
+            <% for (const major of _majors) { %>
+                <option value="<%= major.id %>"><%= major.Name %> <%-major.Description%></option>
+            <% } %>
+        </select>
+        <label for="Is_ochnay">Is ochnay:</label>
+        <input type="checkbox" id="Is_ochnay" name="Is_ochnay" <%= user?.Is_ochnay ? 'checked' : '' %>>
+
+        <label for="parents">Parents:</label>
+        <input type="text" id="parents" name="Parents" required>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="Address" required>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="Phone" required>
+
+        <label for="passport">Passport:</label>
+        <input type="number" id="passport" name="Passport" required>
+
+        <label for="zachetNumber">Zachet Number:</label>
+        <input type="number" id="zachetNumber" name="ZachetNumber" required>
+
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="StartDate" required>
+
+        <label for="group">Group:</label>
+        <input type="number" id="group" name="Group" required>
+
+        <label for="curs">Curs:</label>
+        <input type="number" id="curs" name="Curs" required>
+
+        <input type="submit" id="submit-btn" value="<%-userKey!=='new' ? 'Сохранить':'Создать' %>">
+        <button type="button" id="remove-btn">Remove</button>
+    </form>
+</main>
+
+<footer>
+    <p>Copyright ©2023 Zakirov</p>
+</footer>
+</body>
+</html>

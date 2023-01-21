@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' href='/stylesheets/style.css'/>
+  <title>My Website</title>
+</head>
+<body>
+<%- include('./template/header.ejs'); %>
+
+<main>
+    <h1>Predmet list</h1>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>ID</th>
+    </tr>
+    <%
+    /**
+     * @type {Array<Predmet>}
+     */
+    const predmetList = predmets;
+    for(var i=0; i < predmetList.length; i++) { %>
+      <tr>
+        <td><%= predmetList[i].Name %></td>
+        <td><%= predmetList[i].Description %></td>
+        <td><%= predmetList[i].id %></td>
+      </tr>
+    <% } %>
+  </table>
+
+</main>
+
+<footer>
+  <p>Copyright ©2023 Zakirov</p>
+</footer>
+</body>
+</html>

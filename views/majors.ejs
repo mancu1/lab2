@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <title>My Website</title>
+</head>
+<body onload="onLoadHandler()">
+<%- include('./template/header.ejs'); %>
+<%
+/**
+ * @type {Major}
+ */
+const existingMajor = major;
+/**
+ * @type {number}
+ */
+const countMajors = count;
+/**
+ * @type {number | 'new'}
+ */
+const majorKey = key;
+
+%>
+<script>
+
+    let currentPage = <%- majorKey!=='new'?majorKey: 0%>;
+
+    function onLoadHandler() {
+        fillFormWithExistingMajor();
+        initHandlers();
+    }
+    function initHandlers() {
+
+        document.querySelector("form").addEventListener("submit", event => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+
+
+            const formElem = event.target;
+            let isFormValid = true;
+
+            // check if all fields are filled in
+            for (let input of formElem) {
+                if (input.type !== "submit" &&input.type !== "button" && input.name !== "id" && !input.value) {
+                    isFormValid = false;
+                    input.classList.add("invalid");
+                } else {
+                    input.classList.remove("invalid");
+                }
+            }
+            if (isFormValid) {
+                let object = {};
+                formData.forEach((value, key) => {
+                    if (!Reflect.has(object, key)) {
+                        object[key] = value;
+                        return;
+                    }
+                    if (!Array.isArray(object[key])) {
+                        object[key] = [object[key]];
+                    }
+                    object[key].push(value);
+                });
+
+                var existingMajor = <%- JSON.stringify(major) %>;
+                if  (!!existingMajor && !!existingMajor.id) {
+                    object.id = existingMajor.id;
+                }
+
+                object.Is_ochnay = !!object.Is_ochnay? 1: 0;
+                let json = JSON.stringify(object);
+
+
+                fetch("/majors", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: json
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        // Handle the success response
+                    })
+                    .catch(error => {
+                        // Handle the error response
+                    });
+            }
+        });
+        document.getElementById("remove-btn").addEventListener("click", () => {
+            fetch(`/majors/<%-major?.id%>`, {
+                method: "DELETE"
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    // reset form fields
+                    // update selected major id
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    }
+
+    function fillFormWithExistingMajor() {
+        var existingMajor = <%- JSON.stringify(major) %>;
+        if (!existingMajor) {
+            document.getElementById("remove-btn").disabled = true;
+            return;
+        }
+        document.getElementById("id").value = existingMajor.id;
+        document.getElementById("Description").value = existingMajor.Description;
+        document.getElementById("Name").value = existingMajor.Name;
+
+    }
+
+
+</script>
+<main>
+
+    <%- include('./template/navigation.ejs', {total: countMajors, title: "Специальность", id: majorKey, link: "majors"}); %>
+
+<!--    -->
+    <form>
+        <label for="id">Id:</label>
+        <input type="number" id="id" name="id" disabled>
+
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="Name" required>
+
+        <label for="Description">Description:</label>
+        <input type="text" id="Description" name="Description" required>
+
+
+        <input type="submit" id="submit-btn" value="<%-majorKey!=='new' ? 'Сохранить':'Создать' %>">
+        <button type="button" id="remove-btn">Remove</button>
+    </form>
+</main>
+
+<footer>
+    <p>Copyright ©2023 Zakirov</p>
+</footer>
+</body>
+</html>

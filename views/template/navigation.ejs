@@ -1,0 +1,82 @@
+<%
+/**
+ * @type {number}
+ */
+const _total = total;
+/**
+ * @type {number}
+ */
+const _title = title;
+/**
+ * @type {number | 'new'}
+ */
+const _id = id;
+/**
+ * @type {string}
+ */
+const _link = link;
+
+let currentPage = _id !== "new" ? _id : 0;
+%>
+
+<script>
+    addEventListener("load", (event) => {
+        const first = document.getElementById("first");
+        const prev = document.getElementById("prev");
+        const next = document.getElementById("next");
+        const last = document.getElementById("last");
+        const create = document.getElementById("create");
+
+        first.disabled = <%= currentPage === 1; %>;
+        if (!!prev) {
+            prev.disabled =  <%= currentPage === 1; %>;
+        }
+        if (!!next) {
+            next.disabled = <%= currentPage === _total; %>;
+        }
+        last.disabled = <%= currentPage === _total; %>;
+
+
+        first.addEventListener("click", () => {
+            window.location.pathname = `/<%- _link; %>/${1}`
+        });
+        if (!!prev) {
+            prev.addEventListener("click", () => {
+                window.location.pathname = `/<%- _link; %>/<%- currentPage - 1; %>`
+            });
+        }
+
+        if (!!next) {
+            next.addEventListener("click", () => {
+                window.location.pathname = `/<%- _link; %>/<%- currentPage + 1; %>`
+            });
+        }
+
+        last.addEventListener("click", () => {
+            window.location.pathname = `/<%- _link; %>/<%- _total; %>`
+        });
+        create.addEventListener("click", () => {
+            window.location.pathname = `/<%- _link; %>/new`
+        });
+    });
+</script>
+
+
+<% if (id === "new") { %>
+    <h1><%- _title; %> Создание </h1>
+    <div class="pagination">
+        <button id="first">Первая</button>
+        <button id="last">Последняя</button>
+        <button id="create">Создать</button>
+    </div>
+<% } else { %>
+    <h1><%- _title; %>  </h1>
+    <div class="pagination">
+        <button id="first">Первая</button>
+        <button id="prev">Предыдущая</button>
+        <h2> <%- _id; %> из <%- _total; %></h2>
+        <button id="next">Дальше</button>
+        <button id="last">Следующая</button>
+        <button id="create">Создать</button>
+    </div>
+<% } %>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <title>My Website</title>
+</head>
+<body>
+<%- include('./template/header.ejs'); %>
+
+<main>
+    <h1>Пропущенные Экзамены Студентов</h1>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>FIO</th>
+            <th>Gender</th>
+            <th>Birthdate</th>
+            <th>Parents</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Passport</th>
+            <th>Zachet Number</th>
+            <th>Start Date</th>
+            <th>Group</th>
+            <th>Curs</th>
+            <th>Actions</th>
+        </tr>
+        <%
+        /**
+         * @type {Array<User>}
+         */
+        const userList = list;
+        for(var i = 0; i < userList.length; i++) { %>
+            <tr>
+                <td><%= userList[i].id ;%></td>
+                <td><%= userList[i].FIO ;%></td>
+                <td><%= userList[i].Gender ;%></td>
+                <td><%= userList[i].bd ;%></td>
+                <td><%= userList[i].Parents ;%></td>
+                <td><%= userList[i].Address ;%></td>
+                <td><%= userList[i].Phone ;%></td>
+                <td><%= userList[i].Passport ;%></td>
+                <td><%= userList[i].ZachetNumber ;%></td>
+                <td><%= userList[i].StartDate ;%></td>
+                <td><%= userList[i].Group ;%></td>
+                <td><%= userList[i].Curs ;%></td>
+                <td>
+                    <a href="/predmetById/<%=userList[i].id;%>">Пропущеные экзамены</a>
+                </td>
+            </tr>
+        <% } %>
+    </table>
+</main>
+
+<footer>
+    <p>Copyright ©2023 Zakirov</p>
+</footer>
+</body>
+</html>

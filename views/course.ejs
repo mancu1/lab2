@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <title>My Website</title>
+</head>
+<body>
+<%- include('./template/header.ejs'); %>
+
+
+<main>
+    <h1>Users</h1>
+    <table>
+        <tr>
+            <th>Curs</th>
+            <th>Actions</th>
+        </tr>
+        <%
+        /**
+         * @type {Array<{'Курс':number}>}
+         */
+        const courseList = list;
+        for(var i = 0; i < courseList.length; i++) { %>
+            <tr>
+                <td><%= courseList[i]["Курс"] ; %></td>
+                <td>
+                    <a href="/courseCount/<%=courseList[i]["Курс"];%>">К колву студентов</a>
+                </td>
+            </tr>
+        <% } %>
+    </table>
+</main>
+
+<footer>
+    <p>Copyright ©2023 Zakirov</p>
+</footer>
+</body>
+</html>
